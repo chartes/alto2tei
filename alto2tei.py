@@ -544,7 +544,7 @@ def _init_argument_parser():
     """
     parser = argparse.ArgumentParser(
         prog="alto2tei",
-        description="Lorem ipsum",
+        description="Command line program to convert ALTO files to XML/TEI.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(

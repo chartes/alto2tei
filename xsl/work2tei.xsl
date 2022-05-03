@@ -18,11 +18,13 @@
     <!-- <xsl:processing-instruction name="xml-model">href="http://svn.code.sf.net/p/algone/code/teibook/teibook.rng" type="application/xml"  schematypens="http://relaxng.org/ns/structure/1.0"</xsl:processing-instruction> -->
     <xsl:apply-templates/>
   </xsl:template>
+  
   <xsl:template match="node() | @*">
     <xsl:copy>
       <xsl:apply-templates select="node() | @*"/>
     </xsl:copy>
   </xsl:template>
+  
   <xsl:template match="tei:body">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
@@ -55,6 +57,7 @@
       </xsl:when>     
     </xsl:choose>
   </xsl:template>
+  
   <xsl:template name="divOpen">
     <xsl:param name="n"/>
     <xsl:choose>
@@ -103,6 +106,7 @@
       <xsl:apply-templates/>
     </hi>
   </xsl:template>
+  
   <xsl:template match="tei:sup">
     <xsl:variable name="text" select="."/>
     <xsl:choose>
@@ -118,24 +122,29 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+    
   <!-- 
     Attention aux blocs qui raccrochent par erreur une ligne <small>
-    *[tei:small and not(*[local-name()!='small'])]
+    *[tei:small and not(*[local-name()!='small'])] => suffit sans fac-simile
+    *[tei:small and *[not(local-name()='lb') or not(local-name()='small')]] => pour conserver le lien à la zone (lb/facs)
     -->
-  <xsl:template match="*[tei:small and not(*[local-name()!='small'])]">
+  <xsl:template match="*[tei:small and *[not(local-name()='lb') or not(local-name()='small')]]">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:attribute name="rend">
         <xsl:value-of select="normalize-space(concat(@rend, ' ', 'small'))"/>
       </xsl:attribute>
-      <xsl:apply-templates select="text()|*/node()"/>
+      <xsl:apply-templates select="text()|*/node()|tei:lb"/>
     </xsl:copy>
   </xsl:template>
+  
   <xsl:template match="tei:fw"/><!-- sortir l’en-tête inférée en pré-traitement (PRE_REGEXES) -->
+  
   <xsl:template match="tei:head[@n='1']/text()">
     <xsl:value-of select="substring(., 1 , 1)"/>
     <xsl:value-of select="translate(substring(., 2), $caps, $mins)"/>
   </xsl:template>
+  
   <!-- Pour débogage afficher un path -->
   <xsl:template name="idpath">
     <xsl:for-each select="ancestor-or-self::*">
